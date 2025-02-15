@@ -1,0 +1,5 @@
+data/train_sample_dataset/
+data/test_images/
+
+yolov5xu.pt
+__pycache__/
