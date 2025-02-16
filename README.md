@@ -22,6 +22,7 @@ The dataset used in this project consists of images and annotations for detectin
 
 Download the dataset from [**here**](https://www.kaggle.com/datasets/andrewmvd/dog-and-cat-detectionThe) and place the training and validations samples in the following structure.
 
+```bash
 .
 ├── data
 │   ├── train_sample_dataset
@@ -34,6 +35,7 @@ Download the dataset from [**here**](https://www.kaggle.com/datasets/andrewmvd/d
 │   ├── test_images          # Images for testing/inference
 │   ├── hyp.yolo_voc.yaml    # Hyperparameter configuration file
 │   ├── yolo_voc.yaml        # YOLO dataset configuration file
+```
 
 ### 2. Training
 
