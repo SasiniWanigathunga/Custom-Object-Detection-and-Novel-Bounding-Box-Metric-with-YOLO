@@ -74,7 +74,7 @@ The model will be evaluated for the validation dataset when you run the above tr
 
 ## Qualitative Results
 
-![Qualitative Results](runs/train/exp36/val_batch2_pred.jpg "Qualitative Results")
+![Qualitative Results](assets/val_batch2_pred.jpg "Qualitative Results")
 
 ## Notes
 
