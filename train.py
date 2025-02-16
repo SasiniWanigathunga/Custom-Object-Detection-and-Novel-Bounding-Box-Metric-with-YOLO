@@ -54,14 +54,27 @@ def train(opt):
         model = Model(opt.cfg, ch=3).to(device)  # create
         exclude = ['anchor'] if opt.cfg else []  # exclude keys
         # state_dict = ckpt['model'].float().state_dict()  # official model, to FP32
-        state_dict = ckpt['model'].float().state_dict()  # self model
-        state_dict = intersect_dicts(state_dict, model.state_dict(), exclude=exclude)  # intersect
+        state_dict_ = ckpt['model'].float().state_dict()  # self model
+        state_dict = intersect_dicts(state_dict_, model.state_dict(), exclude=exclude)  # intersect
         model.load_state_dict(state_dict, strict=False)  # load param
+
+        model_state = model.state_dict()
+        mismatch = False
+        for key in state_dict:
+            if not torch.allclose(model_state[key], state_dict[key], atol=1e-6):
+                print(f"Weight mismatch found for {key}: difference={torch.abs(model_state[key] - state_dict[key]).max()}")
+                mismatch = True
+        if not mismatch:
+            print("All weights match between the model and the checkpoint!")
     else:
         model = Model(opt.cfg, ch=3).to(device)  # create
 
     for k, v in model.named_parameters():
-        v.requires_grad = True  # train all layers
+        if 'model.24' in k:
+            v.requires_grad = True
+        else:
+            v.requires_grad = False  # train all layers
+        print(k, v.requires_grad)
 
     # Config
     nc = int(data_dict['nc'])  # number of classes
@@ -91,7 +104,7 @@ def train(opt):
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)
 
     # Loss
-    loss_callable = ComputeLoss(model)
+    loss_callable = ComputeLoss(model, opt.custom_loss)
 
     # Train
     for epoch in range(opt.epochs):
@@ -141,6 +154,7 @@ if __name__ == '__main__':
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--adam', action='store_true', help='use torch.optim.Adam() optimizer')  # if use adam optim
     parser.add_argument('--save', action='store_false', help='save to result dir default')  # save train model, default
+    parser.add_argument('--custom_loss', action='store_true', help='use custom loss')  # use custom loss
     opt = parser.parse_args()
 
     opt.data, opt.cfg, opt.hyp = check_file(opt.data), check_file(opt.cfg), check_file(opt.hyp)  # check files

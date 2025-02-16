@@ -56,7 +56,7 @@ def evaluate(data,
         # Device
         device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         # Model
-        ckpt = torch.load(weights, map_location=device)  # load checkpoint
+        ckpt = torch.load(weights, map_location=device, weights_only=False)  # load checkpoint
         model = Model(opt.cfg, ch=3).to(device)  # create
         exclude = ['anchor'] if opt.cfg else []  # exclude keys
         # state_dict = ckpt['model'].float().state_dict()  # official model, to FP32
@@ -67,7 +67,7 @@ def evaluate(data,
         with open(opt.hyp) as f:
             hyp = yaml.load(f, Loader=yaml.SafeLoader)  # load hyps
         _, _, val_img_path, val_label_path = get_data_path(data_dict)
-        val_dataset = CustomDataset(val_img_path, val_label_path, augment=True, hyp=hyp, radam_perspect=False)
+        val_dataset = CustomDataset(val_img_path, val_label_path)
         nw = min([os.cpu_count(), opt.batch_size if opt.batch_size > 1 else 0, 8])
         dataloader = DataLoader(val_dataset,
                                 batch_size=opt.batch_size,
@@ -189,9 +189,11 @@ if __name__ == '__main__':
     # parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     # parser.add_argument('--augment', action='store_true', help='augmented inference')
     # parser.add_argument('--save', action='store_true', help='save inference image')
+    parser.add_argument('--cfg', type=str, default='models/yolov5s_yolo_voc.yaml', help='model.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyp.yolo_voc.yaml', help='hyperparameters yaml path')
+    parser.add_argument('--batch-size', type=int, default=32, help='total batch size for all GPUs')
     opt = parser.parse_args()
     print(opt)
 
     with torch.no_grad():
-        evaluate()
+        evaluate(data='data/yolo_voc.yaml', weights='result/epoch6_2025-02-16_07-03-49_model.pth')

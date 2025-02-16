@@ -8,6 +8,17 @@ import time
 import numpy as np
 import torch
 import torchvision
+import torch.nn as nn
+
+
+def is_parallel(model):
+    """Checks if the model is using Data Parallelism (DP) or Distributed Data Parallelism (DDP)."""
+    return type(model) in (nn.parallel.DataParallel, nn.parallel.DistributedDataParallel)
+
+
+def de_parallel(model):
+    """Returns a single-GPU model by removing Data Parallelism (DP) or Distributed Data Parallelism (DDP) if applied."""
+    return model.module if is_parallel(model) else model
 
 
 def get_latest_run(search_dir='.'):

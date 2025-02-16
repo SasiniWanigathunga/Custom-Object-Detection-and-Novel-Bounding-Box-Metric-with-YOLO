@@ -19,7 +19,7 @@ def detect(opt):
     cname = data_dict['names']
 
     # Load model
-    ckpt = torch.load(weights, map_location=device)  # load
+    ckpt = torch.load(weights, map_location=device, weights_only=False)  # load
     # model = ckpt['model'].float().eval()  # official model yolov5s.pt
     model = ckpt.float().eval()  # self model
     # Compatibility updates
@@ -77,11 +77,11 @@ def detect(opt):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, default='data/yolo_voc.yaml', help='data.yaml path')
-    parser.add_argument('--weights', type=str, default='yolov5s_pretrain.pth', help='model.pt path(s)')
-    parser.add_argument('--source', type=str, default='data/test_images/motorbike.jpg', help='source')
+    parser.add_argument('--weights', type=str, default='yolov5xu.pt', help='model.pt path(s)')
+    parser.add_argument('--source', type=str, default='data/train_sample_dataset/images/val/Cats_Test3002.png', help='source')
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
+    parser.add_argument('--conf-thres', type=float, default=0.05, help='object confidence threshold')
+    parser.add_argument('--iou-thres', type=float, default=0.15, help='IOU threshold for NMS')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--augment', action='store_true', help='augmented inference')
     parser.add_argument('--save', action='store_true', help='save inference image')
