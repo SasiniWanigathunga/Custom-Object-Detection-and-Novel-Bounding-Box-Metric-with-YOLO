@@ -181,7 +181,7 @@ def evaluate(data,
 if __name__ == '__main__':
     ''' not test in the main, just call evaluate while training '''
     parser = argparse.ArgumentParser()
-    # parser.add_argument('--weights', type=str, default='yolov5s.pt', help='model.pt path(s)')
+    parser.add_argument('--weights', type=str, default='yolov5xu.pt', help='model.pt path(s)')
     # parser.add_argument('--source', type=str, default='data/test_images/dog.jpg', help='source')
     # parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     # parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
@@ -192,8 +192,9 @@ if __name__ == '__main__':
     parser.add_argument('--cfg', type=str, default='models/yolov5s_yolo_voc.yaml', help='model.yaml path')
     parser.add_argument('--hyp', type=str, default='data/hyp.yolo_voc.yaml', help='hyperparameters yaml path')
     parser.add_argument('--batch-size', type=int, default=32, help='total batch size for all GPUs')
+    parser.add_argument('--data', type=str, default='data/yolo_voc.yaml', help='data.yaml path')
     opt = parser.parse_args()
     print(opt)
 
     with torch.no_grad():
-        evaluate(data='data/yolo_voc.yaml', weights='result/epoch6_2025-02-16_07-03-49_model.pth')
+        evaluate(opt.data, opt.weights)
