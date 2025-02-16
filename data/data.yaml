@@ -1,0 +1,6 @@
+names:
+- cat
+- dog
+nc: 2
+train: ../datasets/dog-and-cat-detection/train/
+val: ../datasets/dog-and-cat-detection/valid/

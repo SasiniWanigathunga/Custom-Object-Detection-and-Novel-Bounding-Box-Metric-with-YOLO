@@ -9,48 +9,73 @@ Clone repo and install [requirements.txt](https://github.com/ultralytics/yolov5/
 
 
 ```bash
-git clone --branch main https://github.com/SasiniWanigathunga/yolov5.git
+git clone --branch ultralytics/yolov5 https://github.com/SasiniWanigathunga/yolov5.git
 cd yolov5
 pip install -r requirements.txt
 ```
 
-## Data
+### Data
 
-The dataset used in this project consists of images and annotations for detecting cats and dogs. You'll need to specify the paths for the annotations, images, and output directories when running the preprocessing script.
+Download the dataset using:
 
-### 1. Preprocess Data
+```bash
+python datasets/download_kaggle_cat_dog.py
+```
+and place the images and annotations directories in the datasets/dog-cat-detection/ folder. Preprocess the dataset using the follwoing code:
 
-Download the dataset from [**here**](https://www.kaggle.com/datasets/andrewmvd/dog-and-cat-detectionThe) and place the training and validations samples in the following structure.
+```bash
+python dataset_preparation.py
+```
+
+This script converts XML annotations to the YOLO format and prepares the dataset for training. The dataset folder structure will be:
+
 
 ```bash
 .
-├── data
-│   ├── train_sample_dataset
-│   │   ├── images
-│   │   │   ├── train          # Training images
-│   │   │   ├── val            # Validation images
+├── datasets
+│   ├── dog-and-cat-detection
+│   │   ├── annotations  
+│   │   ├── images                  
 │   │   ├── labels
-│   │   │   ├── train          # Corresponding labels for training images (.xml format)
-│   │   │   ├── val            # Corresponding labels for validation images (.xml format)
-│   ├── test_images          # Images for testing/inference
-│   ├── hyp.yolo_voc.yaml    # Hyperparameter configuration file
-│   ├── yolo_voc.yaml        # YOLO dataset configuration file
+│   │   ├── train 
+│   │   │   ├── images 
+│   │   │   ├── labels                 
+│   │   ├── val   
+│   │   │   ├── images 
+│   │   │   ├── labels          
 ```
 
-### 2. Training
+## Training
+
+Download [**yolov5s**](https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5s.pt) checkpoint using the following command.
+
+```bash
+wget https://github.com/ultralytics/yolov5/releases/download/v7.0/yolov5s.pt
+```
 
 Run the following command to start training the YOLOv5 model:
 
 ```bash
-python train.py  --weights yolov5xu.pt --data data/yolo_voc.yaml --cfg models/yolov5s_yolo_voc.yaml --hyp data/hyp.yolo_voc.yaml --epochs 10 --batch-size 10 --custom_loss
+python train.py --img 640 --batch 32 --epochs 10 --data data/data.yaml --weights yolov5s.pt --device 0
 ```
 
-This will save the model in results/ directory. For the training with custom loss have the custom_loss argument in the above script and otherwise not.
+This script will train the model, evaluate it on the validation set and save the visualizations and training curves.
 
-## Model Evaluation
+## Evaluation
 
-Evaluate the model on the validation set using the following command:
+The model will be evaluated for the validation dataset when you run the above training script.
 
-```bash
-python evaluate.py  --data data/yolo_voc.yaml --weights result/epoch6_2025-02-16_07-03-49_model.pth --batch 32
-```
+## Quantitative Results
+
+| Method                   | mAP@0.5 | mAP@0.95 | Custom bounding box similarity metric |
+|--------------------------|---------|----------|-----------------------------------------|
+| Baseline                 | 0.989   | 0.817    | 0.965                                   |
+| Baseline + Custom Loss   | 0.989   | 0.824    | 0.966                                   |
+
+## Qualitative Results
+
+![Qualitative Results](runs/train/exp36/val_batch2_pred.jpg "Qualitative Results")
+
+## Notes
+
+- Please note that [**Dog and Cat Detection dataset on Kaggle**](https://www.kaggle.com/datasets/andrewmvd/dog-and-cat-detection) is the dataset used and it for detecting the faces of the cats and dogs.
